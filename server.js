@@ -6,10 +6,10 @@ const body_parser = require('body-parser');
 const cors = require('cors');
 const nanoid = require('nanoid');
 const crypto = require('crypto');
+const { assert } = require('console');
 
 const algoritmo = "aes-256-ctr";
 const llave = "vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3";
-const iv = crypto.randomBytes(16);
 
 const archivo = new FileSync("database.json");
 const db = lowdb(archivo);
@@ -87,6 +87,35 @@ server.get("/usuarios", (req, res) => {
     )
 });
 
+server.post("/login", (req, res) => {
+    if (req.body.usuario === undefined || req.body.password === undefined) {
+        res.status(400).json({
+            status_code: 400,
+            mensaje: "Error, faltan parámetros para realizar la petición",
+            parametros_faltantes: {
+                usuario: req.body.usuario === undefined ? null : req.body.usuario,
+                password: req.body.password === undefined ? null : req.body.password
+            }
+        });
+    } else {
+        let inicioSesion = false;
+        const usuarioInicio = usuarios.find({usuario: req.body.usuario}).value();
+        const passDb = usuarioInicio.password;
+        const descifrar = crypto.createDecipher(algoritmo, llave);
+        const descifrado = descifrar.update(passDb, 'hex', 'utf8') + descifrar.final('utf8');
+        if (descifrado === req.body.password) {
+            inicioSesion = true;
+        } else {
+            inicioSesion = false;
+        }
+
+        res.status(200).json({
+            status_code: 200,
+            inicio_sesion: inicioSesion
+        });
+    }
+});
+
 server.post("/agregarNota", async (req, res) => {
     if (req.body.titulo_nota === undefined || req.body.mensaje === undefined) {
         res.status(400).json({
@@ -116,7 +145,6 @@ server.post("/agregarNota", async (req, res) => {
 });
 
 server.post("/agregarUsuario", (req, res) => {
-
     if (req.body.nombre === undefined || req.body.usuario === undefined || req.body.password === undefined) {
         res.status(400).json({
             status_code: 400,
@@ -131,7 +159,8 @@ server.post("/agregarUsuario", (req, res) => {
         if (lenObject(req.body) > 3) {
             mensajeMuchosParametros(res, ["nombre", "usuario", "password"]);
         } else {
-            const cifrado = crypto.createCipheriv(algoritmo, llave, iv);
+            console.log(iv);
+            const cifrado = crypto.createCipher(algoritmo, llave);
             const encriptado = cifrado.update(req.body.password, 'utf8', 'hex') + cifrado.final('hex');
             usuarios.insert({
                 id: nanoid.nanoid(),
