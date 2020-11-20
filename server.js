@@ -6,7 +6,6 @@ const body_parser = require('body-parser');
 const cors = require('cors');
 const nanoid = require('nanoid');
 const crypto = require('crypto');
-const { assert } = require('console');
 
 const algoritmo = "aes-256-ctr";
 const llave = "vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3";
