@@ -5,6 +5,11 @@ const FileSync = require('lowdb/adapters/FileSync');
 const body_parser = require('body-parser');
 const cors = require('cors');
 const nanoid = require('nanoid');
+const crypto = require('crypto');
+
+const algoritmo = "aes-256-ctr";
+const llave = "vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3";
+const iv = crypto.randomBytes(16);
 
 const archivo = new FileSync("database.json");
 const db = lowdb(archivo);
@@ -62,6 +67,7 @@ server.post("/agregarNota", async (req, res) => {
                 titulo_nota: req.body.titulo_nota,
                 mensaje: req.body.mensaje
             }).write();
+            
             res.status(200).json({
                 status_code: 200,
                 mensaje: 'Todo ha salido correcto'
@@ -70,17 +76,40 @@ server.post("/agregarNota", async (req, res) => {
     }
 });
 
-server.get("/agregarUsuario", (req, res) => {
-    const nombre = req.query.nombre;
-    const pass = req.query.password;
+server.post("/agregarUsuario", (req, res) => {
 
-    db.set("usuarios", {
-        "id": nanoid.nanoid(),
-        "nombre": nombre,
-        "contra": pass
-    }).write();
+    if (req.body.nombre === undefined || req.body.usuario === undefined || req.body.password === undefined) {
+        res.status(400).json({
+            status_code: 400,
+            mensaje: "Error, faltan parámetros para realizar la petición",
+            parametros_faltantes: {
+                nombre: req.body.nombre === undefined ? null : req.body.nombre,
+                usuario: req.body.usuario === undefined ? null : req.body.usuario,
+                password: req.body.password === undefined ? null : req.body.password
+            }
+        });
+    } else {
+        if (Object.keys(req.body).length > 3) {
+            res.status(413).json({
+                status_code: 413,
+                mensaje: "Demasiados parámetros de los necesarios",
+                aceptados: ["nombre", "usuario", "password"]
+            });
+        } else {
+            const cifrado = crypto.createCipheriv(algoritmo, llave, iv);
+            const encriptado = cifrado.update(req.body.password, 'utf8', 'hex') + cifrado.final('hex');
+            console.log(encriptado);
+            usuarios.insert({
+                id: nanoid.nanoid(),
+                usuario: req.body.usuario,
+                nombre: req.body.nombre,
+                password: encriptado,
+                hora_registro: Date.now()
+            }).write();
 
-    res.status(200).send('Usuario ha salido correcto');
+            res.status(200).json({status_code: 200, mensaje: `El usuario '${req.body.usuario}' ha sido registrado correctamente`});
+        }
+    }
 });
 
 // process.env.

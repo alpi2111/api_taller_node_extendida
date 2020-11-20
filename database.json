@@ -25,5 +25,26 @@
       "titulo_nota": "Este es el titulo de la nota de postman",
       "mensaje": "Esto es un mensaje desde postman"
     }
+  ],
+  "usuarios": [
+    {
+      "usuario": "alpi2111",
+      "nombre": "Carlos Raúl Oliveros Alpírez",
+      "password": "c41cbbed7d0640b15b20738ed013",
+      "id": "083d4ca6-b0fd-4d26-8f06-34b9a05d38cd"
+    },
+    {
+      "usuario": "alpi2111_2",
+      "nombre": "Carlos Raúl Oliveros Alpírez",
+      "password": "111fb57c0292a9a275abccb516e3",
+      "id": "7ff9eb7f-8454-4a5c-9570-b1c1609f2a10"
+    },
+    {
+      "id": "hHTEpKrf9g1f-lRn0Zazh",
+      "usuario": "user123",
+      "nombre": "Nombre Completo del Usuario",
+      "password": "fd80a2810c22f559433aef97f708",
+      "hora_registro": 1605846965796
+    }
   ]
 }
