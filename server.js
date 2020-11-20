@@ -33,9 +33,10 @@ server.get("/", (request, variable) => {
 });
 
 server.get("/notas", (req, res) => {
+    console.log(req.query);
     res.status(200).json(
         notas.values()
-    )
+    );
 });
 
 server.get("/usuarios", (req, res) => {
@@ -55,19 +56,15 @@ server.post("/agregarNota", async (req, res) => {
             }
         });
     } else {
-        if (Object.keys(req.body).length > 2) {
-            res.status(413).json({
-                status_code: 413,
-                mensaje: "Demasiados parámetros de los necesarios",
-                aceptados: ["titulo_nota", "mensaje"]
-            });
+        if (lenObject(req.body) > 2) {
+            mensajeMuchosParametros(res, ["titulo_nota", "mensaje"]);
         } else {
             notas.insert({
                 id: nanoid.nanoid(),
                 titulo_nota: req.body.titulo_nota,
                 mensaje: req.body.mensaje
             }).write();
-            
+
             res.status(200).json({
                 status_code: 200,
                 mensaje: 'Todo ha salido correcto'
@@ -89,12 +86,8 @@ server.post("/agregarUsuario", (req, res) => {
             }
         });
     } else {
-        if (Object.keys(req.body).length > 3) {
-            res.status(413).json({
-                status_code: 413,
-                mensaje: "Demasiados parámetros de los necesarios",
-                aceptados: ["nombre", "usuario", "password"]
-            });
+        if (lenObject(req.body) > 3) {
+            mensajeMuchosParametros(res, ["nombre", "usuario", "password"]);
         } else {
             const cifrado = crypto.createCipheriv(algoritmo, llave, iv);
             const encriptado = cifrado.update(req.body.password, 'utf8', 'hex') + cifrado.final('hex');
@@ -107,16 +100,24 @@ server.post("/agregarUsuario", (req, res) => {
                 hora_registro: Date.now()
             }).write();
 
-            res.status(200).json({status_code: 200, mensaje: `El usuario '${req.body.usuario}' ha sido registrado correctamente`});
+            res.status(200).json({ status_code: 200, mensaje: `El usuario '${req.body.usuario}' ha sido registrado correctamente` });
         }
     }
 });
 
-// process.env.
-// console.log(process);
 server.listen(PORT, () => console.log(`Server en puerto:${PORT}`));
 
+function lenObject(object) {
+    return Object.keys(object).length;
+}
 
+function mensajeMuchosParametros(res, aceptados) {
+    res.status(413).json({
+        status_code: 413,
+        mensaje: "Demasiados parámetros de los necesarios",
+        aceptados: aceptados
+    });
+}
 // ??
 // ?? express
 // ?? crear y habilitar un servidor
