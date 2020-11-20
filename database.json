@@ -1,11 +1,29 @@
 {
-  "notas": {
-    "titulo_nota": "Crear otros metodos de peticion",
-    "id": "aHRdlFGhQRSxelHHxaAeq"
-  },
-  "usuarios": {
-    "id": "C279cbYSlXsw93hUQIypy",
-    "nombre": "Carlos",
-    "contra": "1234"
-  }
+  "notas": [
+    {
+      "id": "3izMrhuUU2dmXzgsFnllG",
+      "titulo_nota": "Crear más funciones",
+      "mensaje": "Debo crear más funciones para la API Rest"
+    },
+    {
+      "id": "K4AuLF7xdZRgTczkHzv-Q",
+      "titulo_nota": "Crear extensiones",
+      "mensaje": "Debo crear más extensiones para la API Rest"
+    },
+    {
+      "id": "kIMDUF_3N8Jxa-PYWwWRR",
+      "titulo_nota": "Este es el titulo",
+      "mensaje": "Esto es un mensaje"
+    },
+    {
+      "id": "9bwy8SeryLdA8W8HuQtHY",
+      "titulo_nota": "Este es el titulo",
+      "mensaje": "Esto es un mensaje"
+    },
+    {
+      "id": "wCDT6KSZtbi4vhMz86dhG",
+      "titulo_nota": "Este es el titulo de la nota de postman",
+      "mensaje": "Esto es un mensaje desde postman"
+    }
+  ]
 }
