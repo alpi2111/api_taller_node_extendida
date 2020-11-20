@@ -32,11 +32,53 @@ server.get("/", (request, variable) => {
     variable.status(200).json({ "mensaje": 'Hola mundo en node API REST' });
 });
 
-server.get("/notas", (req, res) => {
-    console.log(req.query);
-    res.status(200).json(
-        notas.values()
-    );
+server.get("/notas", async (req, res) => {
+    if (lenObject(req.query) > 0) {
+        if (req.query.id !== undefined) {
+            const notaid = notas.getById(req.query.id).value();
+            if (notaid === undefined) {
+                res.status(404).json({
+                    status_code: 404,
+                    mensaje: "No existe ninguna nota con ese id en la base de datos"
+                });
+            } else {
+                res.status(200).json({
+                    status_code: 200,
+                    nota: notaid
+                });
+            }
+        } else if (req.query.texto !== undefined) {
+            var notasEnviar = []
+            notas.value().forEach(val => {
+                var men = val.mensaje.toLowerCase();
+                var tit = val.titulo_nota.toLowerCase();
+                if (men.includes(req.query.texto.toLowerCase()) || tit.includes(req.query.texto.toLowerCase())) {
+                    notasEnviar.push(val);
+                }
+            });
+
+            if (lenObject(notasEnviar) > 0) {
+                res.status(200).json({
+                    status_code: 200,
+                    notas: notasEnviar
+                })
+            } else {
+                res.status(404).json({
+                    status_code: 404,
+                    mensaje: "No existe ninguna nota que contenga la palabra que buscas"
+                })
+            }
+        } else {
+            res.status(404).json({
+                status_code: 404,
+                mensaje: "La ruta no acepta el parámetro enviado. Por favor verifica que todo esté correcto. Sólo puedes buscar una nota por su id o por texto que contenga"
+            });
+        }
+    } else {
+        res.status(200).json(
+            notas.values()
+        );
+    }
 });
 
 server.get("/usuarios", (req, res) => {
@@ -91,7 +133,6 @@ server.post("/agregarUsuario", (req, res) => {
         } else {
             const cifrado = crypto.createCipheriv(algoritmo, llave, iv);
             const encriptado = cifrado.update(req.body.password, 'utf8', 'hex') + cifrado.final('hex');
-            console.log(encriptado);
             usuarios.insert({
                 id: nanoid.nanoid(),
                 usuario: req.body.usuario,
