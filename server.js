@@ -98,7 +98,7 @@ server.post("/login", (req, res) => {
         });
     } else {
         let inicioSesion = false;
-        const usuarioInicio = usuarios.find({usuario: req.body.usuario}).value();
+        const usuarioInicio = usuarios.find({ usuario: req.body.usuario }).value();
         const passDb = usuarioInicio.password;
         const descifrar = crypto.createDecipher(algoritmo, llave);
         const descifrado = descifrar.update(passDb, 'hex', 'utf8') + descifrar.final('utf8');
@@ -115,7 +115,7 @@ server.post("/login", (req, res) => {
     }
 });
 
-server.post("/agregarNota", async (req, res) => {
+server.post("/agregarNota", (req, res) => {
     if (req.body.titulo_nota === undefined || req.body.mensaje === undefined) {
         res.status(400).json({
             status_code: 400,
@@ -132,7 +132,8 @@ server.post("/agregarNota", async (req, res) => {
             notas.insert({
                 id: nanoid.nanoid(),
                 titulo_nota: req.body.titulo_nota,
-                mensaje: req.body.mensaje
+                mensaje: req.body.mensaje,
+                fecha_creacion: Date.now()
             }).write();
 
             res.status(200).json({
@@ -170,6 +171,43 @@ server.post("/agregarUsuario", (req, res) => {
             }).write();
 
             res.status(200).json({ status_code: 200, mensaje: `El usuario '${req.body.usuario}' ha sido registrado correctamente` });
+        }
+    }
+});
+
+
+server.get("/notaPorFecha/:time", (req, res) => {
+    if (req.params.time === undefined) {
+        res.status(400).json({
+            status_code: 400,
+            mensaje: "Error, faltan parámetros para realizar la petición",
+            parametros_faltantes: {
+                time: null
+            }
+        });
+    } else {
+        console.log(req.params);
+        console.log(req.params.time);
+        const time = parseInt(req.params.time);
+        if (time === NaN) {
+            res.status(400).json({
+                status_code: 400,
+                mensaje: `Error, el valor de time ${req.params.time} no es un número válido`,
+            });
+        } else {
+            const notastime = notas.find({ fecha_creacion: time }).value();
+            console.log(notastime);
+            if (notastime === undefined) {
+                res.status(404).json({
+                    status_code: 404,
+                    mensaje: `Error, no se encontró nota con el time ${req.params.time}`,
+                });
+            } else {
+                res.status(200).json({
+                    status_code: 200,
+                    nota: notastime
+                });
+            }
         }
     }
 });

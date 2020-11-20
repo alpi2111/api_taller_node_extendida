@@ -24,6 +24,18 @@
       "id": "wCDT6KSZtbi4vhMz86dhG",
       "titulo_nota": "Este es el titulo de la nota de postman",
       "mensaje": "Esto es un mensaje desde postman"
+    },
+    {
+      "id": "qWwTE87eh_0nOUAZrIea6",
+      "titulo_nota": "Este es el titulo de la nota de postman 2",
+      "mensaje": "Esto es un mensaje desde postman 2",
+      "fecha_creacion": 1605886218996
+    },
+    {
+      "id": "HAHLHYmQF7ObFZiAvlsDG",
+      "titulo_nota": "Este es el titulo de la nota de postman 3",
+      "mensaje": "Esto es un mensaje desde postman 3",
+      "fecha_creacion": 1605886224663
     }
   ],
   "usuarios": [
